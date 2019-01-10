@@ -1,25 +1,31 @@
 #include "ros/ros.h"
+#include "std_msgs/String.h"
+#include "capra_telaire_ros/I2CBus.h"
+#include "capra_telaire_ros/Telaire6713.h"
 
+#include <string>
+#include <memory>
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+
     ros::init(argc, argv, "telaire");
 
     ros::NodeHandle n;
+    ros::Publisher ppm_publisher = n.advertise<std_msgs::String>("ppm", 1);
 
-    I2CBus * i2CBus{ new I2CBus };
+    std::shared_ptr<I2CBus> i2CBus(new I2CBus);
     i2CBus->setBusName("/dev/i2c-1");
     i2CBus->openBus();
 
-    Telaire6713 * telaire6713{ new Telaire6713 };
-    //telaire6713->setAddress(0x15);
-    telaire6713->setI2CBus(i2CBus);
+    Telaire6713 telaire;
+    telaire.setI2CBus(i2CBus);
 
     while (ros::ok()){
-        std::cout << "PPM Reading: " << telaire6713->getPPM() << std::endl;
-        std::cout << "********" << std::endl;
+        std_msgs::String msg;
+        msg.data = std::to_string(telaire.getPPM());
+        ppm_publisher.publish(msg);
         usleep(500000);
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }

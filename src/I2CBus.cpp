@@ -1,10 +1,4 @@
-//
-// Created by alex on 25/11/18.
-//
-
-#include "I2CBus.h"
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
+#include "capra_telaire_ros/I2CBus.h"
 #include <fcntl.h>
 
 int I2CBus::getFile() {

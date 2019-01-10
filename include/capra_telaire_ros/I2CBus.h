@@ -9,8 +9,8 @@
 
 class I2CBus {
 public:
-    //I2CBus();
-    //~I2CBus();
+    I2CBus() = default;
+    ~I2CBus() = default;
 
     int getFile();
 

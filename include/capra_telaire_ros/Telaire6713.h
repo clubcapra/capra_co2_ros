@@ -6,6 +6,7 @@
 #define CAPRA_CO2_DETECTION_TELAIRE6713_H
 
 #include "I2CBus.h"
+#include <memory>
 
 class Telaire6713 {
 
@@ -14,18 +15,18 @@ class Telaire6713 {
     const unsigned int StatusABC[5] = { 0x04, 0x13, 0x8a, 0x00, 0x01 };
 
 public:
-    //Telaire6713();
-    //~Telaire6713();
+    Telaire6713() = default;
+    ~Telaire6713() = default;
 
     int getStatus();
     int getPPM();
     int checkABC();
     //int calibrate();
     void setAddress(int a);
-    void setI2CBus(I2CBus * i2CBus);
+    void setI2CBus(std::shared_ptr<I2CBus>& i2CBus);
 
 private:
-    I2CBus * mI2CBus;
+    std::shared_ptr<I2CBus> mI2CBus;
     unsigned int mReadBuff[4] = {0};
     unsigned int mWriteBuff[5] = {0};
     int mAddress{0x15};

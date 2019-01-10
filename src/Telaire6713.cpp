@@ -1,8 +1,4 @@
-
-// Created by alex on 25/11/18.
-//
-
-#include "Telaire6713.h"
+#include "capra_telaire_ros/Telaire6713.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <algorithm>
@@ -46,6 +42,6 @@ void Telaire6713::setAddress(int a) {
     mAddress = a;
 }
 
-void Telaire6713::setI2CBus(I2CBus * i2CBus) {
+void Telaire6713::setI2CBus(std::shared_ptr<I2CBus>& i2CBus) {
     mI2CBus = i2CBus;
 }
