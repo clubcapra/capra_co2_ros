@@ -24,6 +24,7 @@ public:
     //int calibrate();
     void setAddress(int a);
     void setI2CBus(std::shared_ptr<I2CBus>& i2CBus);
+    bool getBusAccess();
 
 private:
     std::shared_ptr<I2CBus> mI2CBus;

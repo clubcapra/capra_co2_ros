@@ -9,7 +9,6 @@ void I2CBus::setBusName(std::string name) {
     mFilename.assign(name);
 }
 
-
 bool I2CBus::openBus() {
-    return ((mFile = open(mFilename.c_str(), O_RDWR)) > 0);
+    return ((mFile = open(mFilename.c_str(), O_RDWR)) < 0);
 }

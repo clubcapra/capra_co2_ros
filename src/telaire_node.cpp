@@ -15,10 +15,17 @@ int main(int argc, char **argv) {
 
     std::shared_ptr<I2CBus> i2CBus(new I2CBus);
     i2CBus->setBusName("/dev/i2c-1");
-    i2CBus->openBus();
+    if(i2CBus->openBus()){
+        ROS_INFO("Failed to open i2c bus");
+    }
 
     Telaire6713 telaire;
     telaire.setI2CBus(i2CBus);
+
+    if (telaire.getBusAccess())
+    {
+        ROS_INFO("Failed to acquire bus access");
+    }
 
     while (ros::ok()){
         std_msgs::String msg;

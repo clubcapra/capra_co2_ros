@@ -2,6 +2,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <algorithm>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <linux/i2c-dev.h>
 
 bool Telaire6713::mWrite() {
     return write(mI2CBus->getFile(), mWriteBuff, 5) != 5;
@@ -44,4 +48,8 @@ void Telaire6713::setAddress(int a) {
 
 void Telaire6713::setI2CBus(std::shared_ptr<I2CBus>& i2CBus) {
     mI2CBus = i2CBus;
+}
+
+bool Telaire6713::getBusAccess(){
+    return (ioctl(mI2CBus->getFile(), I2C_SLAVE, mAddress) < 0);
 }
