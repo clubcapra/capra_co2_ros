@@ -36,6 +36,11 @@ int Telaire6713::getPPM() {
         ROS_INFO("readBuff = {%d, %d, %d, %d}", readBuff[0], readBuff[1], readBuff[2], readBuff[3]);
         return readBuff[2] << 8 | readBuff[3];
     }
+    else
+    {
+        ROS_INFO("Failed to write to I2C bus");
+        return -1;
+    }
 }
 
 int Telaire6713::checkABC() {
