@@ -31,7 +31,7 @@ int Telaire6713::getPPM() {
     unsigned int readBuff[4];
 
     if(write(mI2CBus->getFile(), writeBuff, 5) != 5){
-        usleep(100000);
+        usleep(50000);
         read(mI2CBus->getFile(), readBuff, 4);
         ROS_INFO("readBuff = {%d, %d, %d, %d}", readBuff[0], readBuff[1], readBuff[2], readBuff[3]);
         return readBuff[2] << 8 | readBuff[3];
