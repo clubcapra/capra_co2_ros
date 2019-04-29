@@ -10,7 +10,7 @@
 #include "ros/ros.h"
 
 bool Telaire6713::mWrite() {
-    return write(mI2CBus->getFile(), mWriteBuff, 5) != 5;
+    return write(mI2CBus->getFile(), writeBuff, 5) != 5;
 }
 
 int Telaire6713::getStatus() {
@@ -24,12 +24,11 @@ int Telaire6713::getStatus() {
 }
 
 int Telaire6713::getPPM() {
-    //mWriteBuff = PPM;//{0x04, 0x13, 0x8b, 0x00, 0x01};
-    ROS_INFO("mWriteBuff= %d", mWriteBuff);
-    ROS_INFO("PPM Message= %d", PPM);
-    std::copy(std::begin(PPM), std::end(PPM), std::begin(mWriteBuff));
-    ROS_INFO("mWriteBuff= %d", mWriteBuff);
-    if(mWrite()){
+    unsigned int writeBuff[5] = {0x04, 0x13, 0x8b, 0x00, 0x01};
+    // ROS_INFO("PPM Message= %d", PPM);
+    // std::copy(std::begin(PPM), std::end(PPM), std::begin(mWriteBuff));
+    // ROS_INFO("mWriteBuff= %d", mWriteBuff);
+    if(write(mI2CBus->getFile(), writeBuff, 5) != 5){
         usleep(100000);
         read(mI2CBus->getFile(), mReadBuff, 4);
         return mReadBuff[2] << 8 | mReadBuff[3];
