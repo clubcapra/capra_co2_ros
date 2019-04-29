@@ -28,11 +28,12 @@ int Telaire6713::getPPM() {
     // ROS_INFO("PPM Message= %d", PPM);
     // std::copy(std::begin(PPM), std::end(PPM), std::begin(mWriteBuff));
     // ROS_INFO("mWriteBuff= %d", mWriteBuff);
-    unsigned int readBuff[4] = {0};
+    unsigned int readBuff[4];
 
     if(write(mI2CBus->getFile(), writeBuff, 5) != 5){
         usleep(100000);
         read(mI2CBus->getFile(), readBuff, 4);
+        ROS_INFO("readBuff = {%d, %d, %d, %d}", readBuff[0], readBuff[1], readBuff[2], readBuff[3]);
         return readBuff[2] << 8 | readBuff[3];
     }
 }
