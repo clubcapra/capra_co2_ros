@@ -10,7 +10,7 @@
 #include "ros/ros.h"
 
 bool Telaire6713::mWrite() {
-    return write(mI2CBus->getFile(), writeBuff, 5) != 5;
+    return write(mI2CBus->getFile(), mWriteBuff, 5) != 5;
 }
 
 int Telaire6713::getStatus() {
