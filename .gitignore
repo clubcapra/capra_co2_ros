@@ -32,6 +32,9 @@ devel_isolated/
 # qcreator stuff
 CMakeLists.txt.user
 
+# vscode stuff
+.vscode
+
 srv/_*.py
 *.pcd
 *.pyc
@@ -49,3 +52,4 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+.vscode/c_cpp_properties.json
