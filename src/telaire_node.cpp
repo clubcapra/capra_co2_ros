@@ -38,8 +38,8 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    char buffer_write[5] = {0x04, 0x13, 0x8b, 0x00, 0x01};
-    char buffer_read[4];
+    unsigned char buffer_write[5] = {0x04, 0x13, 0x8b, 0x00, 0x01};
+    unsigned char buffer_read[4];
 
     while (ros::ok())
     {
