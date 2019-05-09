@@ -11,7 +11,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include <WiringSerial.h>
+#include <wiringSerial.h>
 
 #define CO2_ADDR 0x15        // default I2C slave address
 #define CO2_DEV "/dev/i2c-1" // default I2C device file

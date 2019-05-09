@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+set(wiringPi_include "/usr/include")
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -117,12 +118,16 @@ find_package(catkin REQUIRED COMPONENTS
 include_directories(
   # include
   ${catkin_INCLUDE_DIRS}
+  ${wiringPi_include}
 )
+#include_directories(/usr/local/include)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/capra_telaire_ros.cpp
 # )
+
+LINK_DIRECTORIES("/usr/lib")
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -146,7 +151,7 @@ add_executable(${PROJECT_NAME}_node src/telaire_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
-   ${catkin_LIBRARIES}
+   ${catkin_LIBRARIES} wiringpi
 )
 
 #############
