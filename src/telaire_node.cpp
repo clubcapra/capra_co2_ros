@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
     int dataAvail = 0;
 
-    ros::Rate r(10) //10 hz
+    ros::Rate r(10); //10 hz
     while (ros::ok())
     {
         std_msgs::String msg;
