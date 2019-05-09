@@ -15,7 +15,7 @@
 
 #define CO2_ADDR 0x15        // default I2C slave address
 #define CO2_DEV "/dev/i2c-1" // default I2C device file
-#define BAUD 9600
+#define BAUD 19200
 
 int main(int argc, char **argv)
 {
@@ -39,12 +39,15 @@ int main(int argc, char **argv)
 
     int dataAvail = 0;
 
-    ros::Rate r(10); //10 hz
+    ros::Rate r(1); //10 hz
     while (ros::ok())
     {
         std_msgs::String msg;
         
-        serialPuts(file, buffer_write.c_str());
+        //serialPuts(file, &buffer_write);
+	for(int i=0; i < 8; ++i){
+		serialPutchar(file, buffer_write[i]);
+	}
 
         usleep(50000);
         
