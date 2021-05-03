@@ -11,8 +11,8 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#define CO2_ADDR 0x15        // default I2C slave address
-#define CO2_DEV "/dev/i2c-1" // default I2C device file
+#define CO2_ADDR 0x74        // default I2C slave address
+#define CO2_DEV "/dev/i2c-8" // default I2C device file
 
 int main(int argc, char **argv)
 {
