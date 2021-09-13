@@ -1,12 +1,14 @@
 # capra_telaire_ros
 
-capra_co2_ros is a node to interact with a Telaire T6713 CO2 sensor using I2C.
+capra_co2_ros is a node to interact with a KS0457 keyestudio CCS811 Carbon Dioxide Air Quality sensor using I2C.
+
+
+## Documentation
+Documentation can be found on the [wiki page](https://wiki.keyestudio.com/KS0457_keyestudio_CCS811_Carbon_Dioxide_Air_Quality_Sensor) of the sensor. The [code of the library](https://www.dropbox.com/sh/or1jzflapzbdepd/AAAGrCZgyjPOtNyLYNcyzL90a/Libraries/CCS811?dl=0&preview=CCS811.cpp) was reproduced for a Jetson as we do not use an Arduino.
 
 
 ## Pin connections
-The Telaire sensor has six pins. The output of each pin is described in the [telaire document](doc/AAS-916-142A-Telaire-T67xx-CO2-Sensor-022719-web.pdf) found in the doc file. Connection was made by matching the pins of the sensor to the pins of the Jetson following [its GPIO header pinout plan](https://www.jetsonhacks.com/nvidia-jetson-agx-xavier-gpio-header-pinout/). The pins #5 and #6 were left unplugged since we don't use PWM and pin #6 doesn't need to be connected.
-
-Here we use the i2c communication bus, but the Telaire sensors allows you to use the pins with UART too.
+The CCS811 sensor has six pins. According to the wiki page, we only need to connect five pins: the ground (GND), the VCC, the data (SDA), the clock (SCL) and the WAKE pin. The WAKE needs to be connected to ground and the sensor feeds off 5V.
 
 
 ## Testing on the Jetson AGX Xavier 
@@ -19,3 +21,4 @@ Launch the code with ```roslaunch capra_telaire_ros telaire.launch```
 Make sure that the permissions of the pin you are connected to are right. You can check the address of the pin by executing the following command:
 ```sudo i2cdetect -y -r 8```
 
+Seeing 5A after execution of the command indicates the wiring is ok.
