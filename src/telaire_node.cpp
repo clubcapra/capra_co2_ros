@@ -14,7 +14,7 @@
 #include "std_msgs/String.h"
 
 const int CO2_ADDR = 0x5A;        // default I2C slave address of CCS811
-static const string CO2_DEV = "/dev/i2c-8"; // default I2C device file (check Jetson wiring)
+const char* CO2_DEV = "/dev/i2c-8"; // default I2C device file (check Jetson wiring)
 
 /*I2C ADDRESS*/
 const int CCS811_I2C_ADDRESS1 = 0x5A;
