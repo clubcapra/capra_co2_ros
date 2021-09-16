@@ -12,11 +12,13 @@ The CCS811 sensor has six pins. According to the wiki page, we only need to conn
 
 
 ## Testing on the Jetson AGX Xavier 
-After pluggin the sensor to the Jetson, connect to the Jetson by ssh:
+After plugging the sensor to the Jetson, connect to the Jetson by ssh:
 ```ssh markhor­@IPADDR```
 Replace IPADDR by the IP address of the Jetson. It is connected to the Capra network, so a simple netdiscover of the network should give you the IP address.
 
-Launch the code with ```roslaunch capra_telaire_ros telaire.launch```
+Launch the code with ```roslaunch capra_telaire_ros telaire.launch log_on:="false"```
+
+You can show the details of the buffer_read value by changing the value of the argument log_on to true: ```log_on:="true"```
 
 Make sure that the permissions of the pin you are connected to are right. You can check the address of the pin by executing the following command:
 ```sudo i2cdetect -y -r 8```

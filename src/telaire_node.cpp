@@ -65,12 +65,13 @@ namespace Cycles
     };
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 
     int file;
     std::string filename = CO2_DEV;
     int ppmReading;
+    bool log_measurement_enabled = false;
 
     if ((file = open(filename.c_str(), O_RDWR)) < 0)
     {
@@ -98,7 +99,7 @@ int main(void)
     {
         ROS_INFO("Sent soft reset\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        ROS_INFO("SOft reset completed\n");
+        ROS_INFO("Soft reset completed\n");
     }
 
     // Bootloader start
@@ -154,7 +155,10 @@ int main(void)
         {
             usleep(100000);
             read(file, buffer_read, 8);
-            // ROS_INFO("buffer_read value: %d, %d, %d, %d, %d, %d, %d, %d \n", buffer_read[0], buffer_read[1], buffer_read[2], buffer_read[3], buffer_read[4], buffer_read[5], buffer_read[6], buffer_read[7]);
+            if (argc == 4 && strcmp(argv[1],"true")==0)
+            {
+                ROS_INFO("buffer_read value: %d, %d, %d, %d, %d, %d, %d, %d \n", buffer_read[0], buffer_read[1], buffer_read[2], buffer_read[3], buffer_read[4], buffer_read[5], buffer_read[6], buffer_read[7]);
+            }
 
             ppmReading = (((uint16_t)buffer_read[0] << 8) | (uint16_t)buffer_read[1]);
 
