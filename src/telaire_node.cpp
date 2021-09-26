@@ -13,8 +13,8 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-const int CO2_ADDR = 0x5A;        // default I2C slave address of CCS811
-const char* CO2_DEV = "/dev/i2c-8"; // default I2C device file (check Jetson wiring)
+const int CO2_ADDR = 0x5A;          // default I2C slave address of CCS811
+const char *CO2_DEV = "/dev/i2c-8"; // default I2C device file (check Jetson wiring)
 
 /*I2C ADDRESS*/
 const int CCS811_I2C_ADDRESS1 = 0x5A;
@@ -43,8 +43,10 @@ const int CCS811_BOOTLOADER_APP_START = 0xF4;
 
 const int CCS811_HW_ID = 0x81;
 
-namespace DRIVE_MODE_t{
-    enum Mode{
+namespace DRIVE_MODE_t
+{
+    enum Mode
+    {
         Mode0, //Idle (Measurements are disabled in this mode)
         Mode1, //Constant power mode, IAQ measurement every second
         Mode2, //Pulse heating mode IAQ measurement every 10 seconds
@@ -52,16 +54,16 @@ namespace DRIVE_MODE_t{
         Mode4  //Constant power mode, sensor measurement every 250ms 1xx: Reserved modes (For future use)
     };
 }
-    
+
 namespace Cycles
 {
     enum Cycle
     {
-        Closed,      //Idle (Measurements are disabled in this mode)
-        Cycle_1s,    //Constant power mode, IAQ measurement every second
-        Cycle_10s,   //Pulse heating mode IAQ measurement every 10 seconds
-        Cycle_60s,   //Low power pulse heating mode IAQ measurement every 60 seconds
-        Cycle_250s  //Constant power mode, sensor measurement every 250ms 1xx: Reserved modes (For future use)
+        Closed,    //Idle (Measurements are disabled in this mode)
+        Cycle_1s,  //Constant power mode, IAQ measurement every second
+        Cycle_10s, //Pulse heating mode IAQ measurement every 10 seconds
+        Cycle_60s, //Low power pulse heating mode IAQ measurement every 60 seconds
+        Cycle_250s //Constant power mode, sensor measurement every 250ms 1xx: Reserved modes (For future use)
     };
 }
 
@@ -71,10 +73,8 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "co2_node");
     ros::NodeHandle nh;
 
-    //co2_node = nh.advertise<std_msgs::String>("talker", 1000); --Don't need.
-    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("chatter", 1000);
+    ros::Publisher ppm_pub = nh.advertise<std_msgs::String>("co2_ppm", 1000);
     ros::Rate loop_rate(10);
-
 
     int file;
     std::string filename = CO2_DEV;
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     ROS_INFO("Starting setup\n");
     // Soft reset
     uint8_t buffer_soft_reset[5] = {CCS811_REG_SW_RESET, 0x11, 0xE5, 0x72, 0x8A};
-    if( write(file, buffer_soft_reset, 5) != 5)
+    if (write(file, buffer_soft_reset, 5) != 5)
     {
         ROS_INFO("Failed to write SOFT RESET to I2C bus \n");
     }
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
     // Bootloader start
     uint8_t buffer_bootloader[1] = {CCS811_BOOTLOADER_APP_START};
-    if( write(file, buffer_bootloader, 1) != 1)
+    if (write(file, buffer_bootloader, 1) != 1)
     {
         ROS_INFO("Failed to write BOOTLOADER SETUP to I2C bus \n");
     }
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     measurement[0] = (0 << 2) | (0 << 3) | (DRIVE_MODE_t::Mode4 << 4);
     ROS_INFO("Measurement mode set");
     uint8_t buffer_measurement_mode[2] = {CCS811_REG_MEAS_MODE, measurement[0]};
-    if( write(file, buffer_measurement_mode, 2) != 2)
+    if (write(file, buffer_measurement_mode, 2) != 2)
     {
         ROS_INFO("Failed to write MEASUREMENT MODE to I2C bus \n");
     }
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
     // Set Temperature and Humidity
     double buffer_set_temp_hum[5] = {CCS811_REG_ENV_DATA, 50.5, 0, 24.5, 0};
-    if( write(file, buffer_set_temp_hum, 5) != 5)
+    if (write(file, buffer_set_temp_hum, 5) != 5)
     {
         ROS_INFO("Failed to write TEMP AND HUM to I2C bus \n");
     }
@@ -152,10 +152,9 @@ int main(int argc, char *argv[])
     char buffer_read[8];
     ROS_INFO("Sending request for results\n");
 
-
     while (true)
     {
-        if( write(file, buffer_fetch_value, 2) != 2)
+        if (write(file, buffer_fetch_value, 2) != 2)
         {
             ROS_INFO("Failed to write REQUEST FOR DATA to I2C bus \n");
         }
@@ -163,27 +162,14 @@ int main(int argc, char *argv[])
         {
             usleep(100000);
             read(file, buffer_read, 8);
-            if (argc == 4 && strcmp(argv[1],"true")==0)
-            {
-                ROS_INFO("buffer_read value: %d, %d, %d, %d, %d, %d, %d, %d \n", buffer_read[0], buffer_read[1], buffer_read[2], buffer_read[3], buffer_read[4], buffer_read[5], buffer_read[6], buffer_read[7]);
-            }
-
             ppmReading = (((uint16_t)buffer_read[0] << 8) | (uint16_t)buffer_read[1]);
-	   //construction d'un message a publish dummy
-/*
-	   std_msgs::String msg;
-           std::stringstream ss;
-           ss << "hello world ";
-           msg.data = ss.str();
-*/
 
-	    std_msgs::String msg;
+            std_msgs::String msg;
             std::stringstream ss;
             ss << "CO2 ppm: " << ppmReading;
             msg.data = ss.str();
             ROS_INFO("C02 ppm: %d \n", ppmReading);
-	    //Sending the message, LOG team, are you getting this??!
-	    chatter_pub.publish(msg);
+            ppm_pub.publish(msg);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         ROS_INFO("*****\n");
