@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 
 	    std_msgs::String msg;
             std::stringstream ss;
-            ss << "CO2 ppm: " << ppmReading;
+            ss << ppmReading;
             msg.data = ss.str();
             ROS_INFO("C02 ppm: %d \n", ppmReading);
 	    //Sending the message, LOG team, are you getting this??!
