@@ -17,34 +17,19 @@ const int CO2_ADDR = 0x5A;        // default I2C slave address of CCS811
 const char* CO2_DEV = "/dev/i2c-8"; // default I2C device file (check Jetson wiring)
 
 /*ADRESSES I2C*/
-const int CCS811_I2C_ADDRESS1 = 0x5A;
-const int CCS811_I2C_ADDRESS2 = 0x5B;
 
-const int CCS811_REG_STATUS = 0x00;
 const int CCS811_REG_MEAS_MODE = 0x01;
 const int CCS811_REG_ALG_RESULT_DATA = 0x02;
-const int CCS811_REG_RAW_DATA = 0x03;
 const int CCS811_REG_ENV_DATA = 0x05;
-const int CCS811_REG_NTC = 0x06;
-const int CCS811_REG_THRESHOLDS = 0x10;
+
+// Constantes pour le soft reset
 const int CCS811_REG_BASELINE = 0x11;
-const int CCS811_REG_HW_ID = 0x20;
-const int CCS811_REG_HW_VERSION = 0x21;
-const int CCS811_REG_FW_BOOT_VERSION = 0x23;
-const int CCS811_REG_FW_APP_VERSION = 0x24;
-const int CCS811_REG_INTERNAL_STATE = 0xA0;
-const int CCS811_REG_ERROR_ID = 0xE0;
 const int CCS811_REG_SW_RESET = 0xFF;
 const int CCS811_REG_RESET_INDEX2 = 0xE5;
 const int CCS811_REG_RESET_INDEX3 = 0x72;
 const int CCS811_REG_RESET_INDEX4 = 0x8A;
-
-const int CCS811_BOOTLOADER_APP_ERASE = 0xF1;
-const int CCS811_BOOTLOADER_APP_DATA = 0xF2;
-const int CCS811_BOOTLOADER_APP_VERIFY = 0xF3;
 const int CCS811_BOOTLOADER_APP_START = 0xF4;
 
-const int CCS811_HW_ID = 0x81;
 
 namespace DRIVE_MODE_t{
     enum Mode{
