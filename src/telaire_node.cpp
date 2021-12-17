@@ -118,10 +118,10 @@ int main(int argc, char *argv[])
     }
 
     // FIN INITIALISATION
-    ROS_INFO("Fin initialistion.\n");
+    ROS_INFO(" *** Fin initialistion *** \n");
     uint8_t buffer_fetch_value[2] = {CCS811_REG_ALG_RESULT_DATA, 1};
     char buffer_read[8];
-    ROS_INFO("Envoi de la requête pour récolter des données.\n");
+    ROS_INFO("Envoi de la requête pour récolter les données...\n");
 
 
     while (true)
