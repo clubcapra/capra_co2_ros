@@ -16,7 +16,7 @@
 const int CO2_ADDR = 0x5A;        // default I2C slave address of CCS811
 const char* CO2_DEV = "/dev/i2c-8"; // default I2C device file (check Jetson wiring)
 
-/*I2C ADDRESS*/
+/*ADRESSES I2C*/
 const int CCS811_I2C_ADDRESS1 = 0x5A;
 const int CCS811_I2C_ADDRESS2 = 0x5B;
 
@@ -35,6 +35,9 @@ const int CCS811_REG_FW_APP_VERSION = 0x24;
 const int CCS811_REG_INTERNAL_STATE = 0xA0;
 const int CCS811_REG_ERROR_ID = 0xE0;
 const int CCS811_REG_SW_RESET = 0xFF;
+const int CCS811_REG_RESET_INDEX2 = 0xE5;
+const int CCS811_REG_RESET_INDEX3 = 0x72;
+const int CCS811_REG_RESET_INDEX4 = 0x8A;
 
 const int CCS811_BOOTLOADER_APP_ERASE = 0xF1;
 const int CCS811_BOOTLOADER_APP_DATA = 0xF2;
@@ -65,6 +68,10 @@ namespace Cycles
     };
 }
 
+/*
+*   Tiré de https://www.dropbox.com/sh/or1jzflapzbdepd/AAAGrCZgyjPOtNyLYNcyzL90a/Libraries/CCS811?dl=0&preview=CCS811.cpp&subfolder_nav_tracking=1
+*   
+*/
 int main(int argc, char *argv[])
 {
 
@@ -90,7 +97,7 @@ int main(int argc, char *argv[])
     // STARTING SETUP
     ROS_INFO("Starting setup\n");
     // Soft reset
-    uint8_t buffer_soft_reset[5] = {CCS811_REG_SW_RESET, 0x11, 0xE5, 0x72, 0x8A};
+    uint8_t buffer_soft_reset[5] = {CCS811_REG_SW_RESET, CCS811_REG_BASELINE, CCS811_REG_RESET_INDEX2, CCS811_REG_RESET_INDEX3, CCS811_REG_RESET_INDEX4};
     if( write(file, buffer_soft_reset, 5) != 5)
     {
         ROS_INFO("Failed to write SOFT RESET to I2C bus \n");
