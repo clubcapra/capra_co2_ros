@@ -47,6 +47,13 @@ namespace DRIVE_MODE_t{
 int main(int argc, char *argv[])
 {
 
+    //Initialisation de ROS pour faire un talker
+    ros::init(argc, argv, "co2_node");
+    ros::NodeHandle nh;
+
+    ros::Publisher ppm_pub = nh.advertise<std_msgs::String>("co2_ppm", 1000);
+    ros::Rate loop_rate(10);
+
     int file;
     std::string filename = CO2_DEV;
     int ppmReading;
@@ -65,7 +72,6 @@ int main(int argc, char *argv[])
 
         exit(1);
     }
-
     // DÉBUT INITIALISATION
     ROS_INFO(" *** Début initialisation *** \n");
     // Soft reset
@@ -141,7 +147,12 @@ int main(int argc, char *argv[])
 
             ppmReading = (((uint16_t)buffer_read[0] << 8) | (uint16_t)buffer_read[1]);
 
+            std_msgs::String msg;
+            std::stringstream ss;
+            ss << ppmReading;
+            msg.data = ss.str();
             ROS_INFO("C02 ppm: %d \n", ppmReading);
+            ppm_pub.publish(msg);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         ROS_INFO("*****\n");
