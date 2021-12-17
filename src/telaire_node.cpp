@@ -14,7 +14,7 @@
 #include "std_msgs/String.h"
 
 const int CO2_ADDR = 0x5A;        // adresse par défaut du I2C slave de CCS811
-const char* CO2_DEV = "/dev/i2c-8"; // fichier dev par défaut pour le I2C (vérifier branchdement du Jetson)
+const char *CO2_DEV = "/dev/i2c-8"; // fichier dev par défaut pour le I2C (vérifier branchdement du Jetson)
 
 /*******    ADRESSES I2C    *******
  * Tiré de https://www.dropbox.com/sh/or1jzflapzbdepd/AAAGrCZgyjPOtNyLYNcyzL90a/Libraries/CCS811?dl=0&preview=CCS811.h&subfolder_nav_tracking=1
@@ -24,20 +24,26 @@ const int CCS811_REG_ALG_RESULT_DATA = 0x02;
 const int CCS811_REG_ENV_DATA = 0x05;
 
 // Constantes pour le soft reset
-const int CCS811_REG_BASELINE = 0x11;
+const uint8_t CCS811_REG_BASELINE = 0x11;
 const int CCS811_REG_SW_RESET = 0xFF;
-const int CCS811_REG_RESET_INDEX2 = 0xE5;
-const int CCS811_REG_RESET_INDEX3 = 0x72;
-const int CCS811_REG_RESET_INDEX4 = 0x8A;
+const uint8_t CCS811_REG_RESET_INDEX2 = 0xE5;
+const uint8_t CCS811_REG_RESET_INDEX3 = 0x72;
+const uint8_t CCS811_REG_RESET_INDEX4 = 0x8A;
 const int CCS811_BOOTLOADER_APP_START = 0xF4;
 
 /* 
 *   Voir https://www.dropbox.com/sh/or1jzflapzbdepd/AAAGrCZgyjPOtNyLYNcyzL90a/Libraries/CCS811?dl=0&preview=CCS811.h&subfolder_nav_tracking=1
 *   pour plus de Modes si nécessaire
 */
-namespace DRIVE_MODE_t{
-    enum Mode{
-        Mode4  // Mode alimentation constante, mesures effectuées chaque 250 ms
+namespace DRIVE_MODE_t
+{
+    enum Mode
+    {
+        Mode0, //Idle (Measurements are disabled in this mode)
+        Mode1, //Constant power mode, IAQ measurement every second
+        Mode2, //Pulse heating mode IAQ measurement every 10 seconds
+        Mode3, //Low power pulse heating mode IAQ measurement every 60 seconds
+        Mode4  //Constant power mode, sensor measurement every 250ms 1xx: Reserved modes (For future use)
     };
 }
 
@@ -61,41 +67,41 @@ int main(int argc, char *argv[])
 
     if ((file = open(filename.c_str(), O_RDWR)) < 0)
     {
-        ROS_INFO("Impossible d'ouvrir le bus...");
+        ROS_INFO("Impossible d\'ouvrir le bus...");
         /* ERROR HANDLING; vérifier errno pour voir le problème */
         exit(1);
     }
 
     if (ioctl(file, I2C_SLAVE, CO2_ADDR) < 0)
     {
-        ROS_INFO("Impossible d'accéder au bus et/ou de parler au slave.\n");
+        ROS_INFO("Impossible d\'acceder au bus et/ou de parler au slave.\n");
 
         exit(1);
     }
     // DÉBUT INITIALISATION
-    ROS_INFO(" *** Début initialisation *** \n");
+    ROS_INFO(" *** Debut initialisation *** \n");
     // Soft reset
     uint8_t buffer_soft_reset[5] = {CCS811_REG_SW_RESET, CCS811_REG_BASELINE, CCS811_REG_RESET_INDEX2, CCS811_REG_RESET_INDEX3, CCS811_REG_RESET_INDEX4};
-    if( write(file, buffer_soft_reset, 5) != 5)
+    if (write(file, buffer_soft_reset, 5) != 5)
     {
-        ROS_INFO("Impossible d'envoyer le SOFT RESET au bus I2C.\n");
+        ROS_INFO("Impossible d\'envoyer le SOFT RESET au bus I2C.\n");
     }
     else
     {
-        ROS_INFO("SOFT RESET envoyé.\n");
+        ROS_INFO("SOFT RESET envoye.\n");
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        ROS_INFO("SOFT RESET complété.\n");
+        ROS_INFO("SOFT RESET complete.\n");
     }
 
     // Bootloader
     uint8_t buffer_bootloader[1] = {CCS811_BOOTLOADER_APP_START};
-    if( write(file, buffer_bootloader, 1) != 1)
+    if (write(file, buffer_bootloader, 1) != 1)
     {
-        ROS_INFO("Impossible d'écrire l'initialisation du BOOTLOADER au bus I2C.\n");
+        ROS_INFO("Impossible d'ecrire l\'initialisation du BOOTLOADER au bus I2C.\n");
     }
     else
     {
-        ROS_INFO("Initialisation du BOOTLOADER envoyé.\n");
+        ROS_INFO("Initialisation du BOOTLOADER envoye.\n");
     }
 
     // Mode de mesure - Measurement Mode
@@ -103,38 +109,27 @@ int main(int argc, char *argv[])
     measurement[0] = (0 << 2) | (0 << 3) | (DRIVE_MODE_t::Mode4 << 4);
     ROS_INFO("MEASUREMENT MODE mis en place.");
     uint8_t buffer_measurement_mode[2] = {CCS811_REG_MEAS_MODE, measurement[0]};
-    if( write(file, buffer_measurement_mode, 2) != 2)
+    if (write(file, buffer_measurement_mode, 2) != 2)
     {
-        ROS_INFO("Impossible d'écrire le MEASUREMENT MODE au bus I2C.\n");
+        ROS_INFO("Impossible d\'ecrire le MEASUREMENT MODE au bus I2C.\n");
     }
     else
     {
-        ROS_INFO("MEASUREMENT MODE envoyé.\n");
-    }
-
-    // Set Temperature and Humidity
-    double buffer_set_temp_hum[5] = {CCS811_REG_ENV_DATA, 50.5, 0, 24.5, 0};
-    if( write(file, buffer_set_temp_hum, 5) != 5)
-    {
-        ROS_INFO("Failed to write TEMP AND HUM to I2C bus \n");
-    }
-    else
-    {
-        ROS_INFO("Set Temp and Hum\n");
+        ROS_INFO("MEASUREMENT MODE envoye.\n");
     }
 
     // FIN INITIALISATION
     ROS_INFO(" *** Fin initialistion *** \n");
     uint8_t buffer_fetch_value[2] = {CCS811_REG_ALG_RESULT_DATA, 1};
     char buffer_read[8];
-    ROS_INFO("Envoi de la requête pour récolter les données...\n");
+    ROS_INFO("Envoi de la requete pour recolter les donnees...\n");
 
 
     while (true)
     {
-        if( write(file, buffer_fetch_value, 2) != 2)
+        if (write(file, buffer_fetch_value, 2) != 2)
         {
-            ROS_INFO("Impossible d'envoyer la requête au bus I2C pour récolter les données.\n");
+            ROS_INFO("Impossible d\'envoyer la requete au bus I2C pour récolter les donnees.\n");
         }
         else
         {
