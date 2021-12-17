@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
     // Mode de mesure - Measurement Mode
     uint8_t measurement[1] = {0};
-    measurement[0] = (0 << 2) | (0 << 3) | (DRIVE_MODE_t::Mode4 << 4);
+    measurement[0] = 0 | (DRIVE_MODE_t::Mode4 << 4);
     ROS_INFO("MEASUREMENT MODE mis en place.");
     uint8_t buffer_measurement_mode[2] = {CCS811_REG_MEAS_MODE, measurement[0]};
     if (write(file, buffer_measurement_mode, 2) != 2)
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
         {
             usleep(100000);
             read(file, buffer_read, 8);
-            if (argc == 4 && strcmp(argv[1],"true")==0)
+            if (log_measurement_enabled == true)
             {
                 ROS_INFO("buffer_read value: %d, %d, %d, %d, %d, %d, %d, %d \n", buffer_read[0], buffer_read[1], buffer_read[2], buffer_read[3], buffer_read[4], buffer_read[5], buffer_read[6], buffer_read[7]);
             }
